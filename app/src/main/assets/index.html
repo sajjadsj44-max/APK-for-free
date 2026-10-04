@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transcripts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#17202A; --muted:#58636F; --line:#D3DAE1;
+  --accent:#1F5DA0; --accent-ink:#FFFFFF; --mark:#FFE066; --mark-ink:#17202A;
+  --ok:#2E7A4C; --err:#A8261C; --gutter:#F5F7F9;
+  --font:"Atkinson Hyperlegible", system-ui, Roboto, "Segoe UI", Arial, sans-serif;
+  --urdu:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#11161C; --surface:#182029; --ink:#E5E9EE; --muted:#9AA6B2; --line:#2B3541;
+    --accent:#76AEEA; --accent-ink:#0D1620; --mark:#F2CF4A; --mark-ink:#11161C;
+    --ok:#6CC28F; --err:#F08A80; --gutter:#141B23;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);-webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 60px}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top h1{font-size:1.9rem;line-height:1.1;margin:0 0 6px;letter-spacing:-.01em}
+.top p{margin:0;color:var(--muted)}
+
+form{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+label.big{display:block;font-weight:700;margin-bottom:6px}
+textarea{width:100%;min-height:96px;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--bg);color:var(--ink);font:15px/1.5 var(--font)}
+.linkcount{font-size:.88rem;color:var(--muted);margin:4px 0 0;min-height:1.3em}
+.opts{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media (min-width:560px){.opts{grid-template-columns:repeat(3,1fr)}}
+.opts label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:4px}
+select{width:100%;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);font:15px var(--font)}
+.check{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:.95rem}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.hint{font-size:.84rem;color:var(--muted);margin:2px 0 0 28px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+button{font:700 15px var(--font);padding:11px 18px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+button.quiet{background:transparent;color:var(--accent)}
+button.danger{background:transparent;color:var(--err);border-color:var(--err)}
+button:disabled{opacity:.5}
+.status{font-size:.88rem;color:var(--muted);width:100%}
+.status.bad{color:var(--err)}
+
+.banner{margin-top:16px;padding:12px 14px;border-left:4px solid var(--err);background:var(--surface);border-radius:0 var(--r) var(--r) 0}
+.banner[hidden]{display:none}
+
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:28px 0 8px}
+.bar h2{font-size:1.15rem;margin:0}
+.result{border-top:2px solid var(--ink);padding:14px 0 22px}
+.r-head h3{font-size:1.1rem;line-height:1.3;margin:0 0 4px;word-break:break-word}
+.r-head h3 a{color:var(--ink);text-decoration:none}
+.r-meta{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:.84rem;color:var(--muted);margin:0}
+.r-status{margin:8px 0 0;font-size:.95rem}
+.r-status.err{color:var(--err)}
+.r-status.ok{color:var(--ok)}
+.r-prog{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
+.r-prog[hidden]{display:none}
+.r-prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+.r-notes{margin:6px 0 0;font-size:.88rem;color:var(--muted)}
+.r-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 10px}
+.r-tools button{padding:8px 12px;font-size:14px}
+.r-tools .check{margin:0 4px}
+.r-tools input[type=search]{flex:1 1 100%;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);color:var(--ink);font:15px var(--font)}
+.count{font-size:.84rem;color:var(--muted)}
+
+.r-body{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-height:65vh;overflow:auto}
+.r-body[hidden]{display:none}
+.seg{display:grid;grid-template-columns:4.4em 1fr;border-bottom:1px solid var(--line)}
+.seg:last-child{border-bottom:0}
+.seg .t{background:var(--gutter);border-right:1px solid var(--line);padding:8px 8px;font-size:.82rem;
+  font-variant-numeric:tabular-nums;color:var(--muted);text-align:right;text-decoration:none}
+.seg .x{padding:8px 12px;unicode-bidi:plaintext}
+.para{padding:12px 14px;margin:0;unicode-bidi:plaintext}
+.para+.para{padding-top:0}
+.x:dir(rtl),.para:dir(rtl){font-family:var(--urdu);line-height:2.2}
+mark{background:var(--mark);color:var(--mark-ink);border-radius:2px;padding:0 1px}
+.empty{padding:14px;color:var(--muted);margin:0}
+
+.app{margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
+.app h2{font-size:1.05rem;margin:0 0 8px}
+.app h3{font-size:.98rem;margin:18px 0 6px}
+.app p{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+.models{list-style:none;margin:0;padding:0}
+.models li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.models li span small{display:block;color:var(--muted);font-size:.84rem}
+.models button{padding:6px 12px;font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Transcripts</h1>
+    <p>Share a video to this app from TikTok, YouTube, Instagram or Facebook, or paste links below.</p>
+  </header>
+
+  <div class="banner" id="fatal" hidden></div>
+
+  <form id="form" autocomplete="off">
+    <label class="big" for="links">Video links</label>
+    <textarea id="links" spellcheck="false" placeholder="One link per line"></textarea>
+    <p class="linkcount" id="linkcount"></p>
+
+    <div class="opts">
+      <div>
+        <label for="mode">Source</label>
+        <select id="mode">
+          <option value="auto">Captions, else speech-to-text</option>
+          <option value="captions">Captions only (fast)</option>
+          <option value="speech">Speech-to-text only</option>
+        </select>
+      </div>
+      <div>
+        <label for="lang">Spoken language</label>
+        <select id="lang">
+          <option value="">Detect automatically</option>
+          <option value="en">English</option>
+          <option value="ur">Urdu</option>
+          <option value="hi">Hindi</option>
+          <option value="pa">Punjabi</option>
+          <option value="ar">Arabic</option>
+        </select>
+      </div>
+      <div>
+        <label for="model">Speech-to-text accuracy</label>
+        <select id="model"></select>
+      </div>
+    </div>
+
+    <label class="check"><input type="checkbox" id="translate"> Translate speech to English</label>
+    <p class="hint">Uses speech-to-text. Base or Small give better translations.</p>
+
+    <div class="actions">
+      <button type="submit" id="go">Get transcripts</button>
+      <button type="button" class="danger" id="stop" hidden>Stop</button>
+      <span class="status" id="health">Starting…</span>
+    </div>
+  </form>
+
+  <div class="bar" id="bar" hidden>
+    <h2>Transcripts</h2>
+    <button type="button" class="quiet" id="all">Save all as .txt</button>
+  </div>
+  <div id="results"></div>
+
+  <section class="app">
+    <h2>App</h2>
+    <p id="ver">Checking versions…</p>
+    <button type="button" class="quiet" id="upd">Update downloader</button>
+    <h3>Speech models</h3>
+    <p>Each model downloads once, on first use. Delete one to free space.</p>
+    <ul class="models" id="models"></ul>
+  </section>
+</div>
+
+<script>
+const A = window.Android;
+const $ = s => document.querySelector(s);
+const results = [], queue = [], jobs = {};
+let running = false, stopRequested = false;
+
+/* ---------- utilities ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = (n, w = 2) => String(n).padStart(w, "0");
+function clock(sec){
+  sec = Math.max(0, Math.floor(sec || 0));
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+}
+function srtClock(sec){
+  const ms = Math.round((sec || 0) * 1000);
+  return `${pad(Math.floor(ms/3600000))}:${pad(Math.floor(ms%3600000/60000))}:${pad(Math.floor(ms%60000/1000))},${pad(ms%1000,3)}`;
+}
+function parseLinks(text){
+  const seen = new Set();
+  return (text.match(/https?:\/\/[^\s<>"']+/gi) || []).filter(u => !seen.has(u) && seen.add(u));
+}
+const safeName = t => (t || "transcript").replace(/[\\/:*?"<>|#]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 80) || "transcript";
+const store = {
+  get(k){ try { return localStorage.getItem("vt:" + k); } catch { return null; } },
+  set(k, v){ try { localStorage.setItem("vt:" + k, v); } catch {} }
+};
+
+/* ---------- transcript formats ---------- */
+function paragraphs(segs){
+  const out = []; let cur = [], len = 0, lastEnd = 0;
+  for (const s of segs){
+    if (cur.length && (s.start - lastEnd > 2 || len > 550)) { out.push(cur.join(" ")); cur = []; len = 0; }
+    cur.push(s.text); len += s.text.length; lastEnd = s.end;
+  }
+  if (cur.length) out.push(cur.join(" "));
+  return out;
+}
+const asText = (r, ts) => ts ? r.segments.map(s => `[${clock(s.start)}] ${s.text}`).join("\n") : paragraphs(r.segments).join("\n\n");
+const asSrt = r => r.segments.map((s, i) => `${i+1}\n${srtClock(s.start)} --> ${srtClock(Math.max(s.end, s.start + .5))}\n${s.text}\n`).join("\n");
+const header = r => `${r.title}\n${r.url}\n${"-".repeat(Math.min(60, Math.max(10, r.title.length)))}\n\n`;
+
+/* ---------- rendering ---------- */
+function timeLink(r, sec){
+  return (/youtube/i.test(r.platform || "") && r.id) ? `https://www.youtube.com/watch?v=${encodeURIComponent(r.id)}&t=${Math.floor(sec)}s` : null;
+}
+function highlight(text, q){
+  const safe = esc(text);
+  if (!q) return safe;
+  const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+  return safe.replace(re, m => `<mark>${m}</mark>`);
+}
+function renderBody(r){
+  const body = r.el.querySelector(".r-body"), q = r.query.trim(), ql = q.toLowerCase();
+  const count = r.el.querySelector(".count");
+  if (!r.segments.length){ body.innerHTML = `<p class="empty">No speech or captions were found.</p>`; count.textContent = ""; return; }
+  let hits = 0;
+  if (q) for (const s of r.segments) hits += s.text.toLowerCase().split(ql).length - 1;
+  count.textContent = q ? (hits === 1 ? "1 match" : `${hits} matches`) : "";
+  if (r.showTs){
+    const rows = r.segments.filter(s => !q || s.text.toLowerCase().includes(ql)).map(s => {
+      const href = timeLink(r, s.start);
+      const t = href ? `<a class="t" href="${href}">${clock(s.start)}</a>` : `<span class="t">${clock(s.start)}</span>`;
+      return `<div class="seg">${t}<div class="x" dir="auto">${highlight(s.text, q)}</div></div>`;
+    });
+    body.innerHTML = rows.join("") || `<p class="empty">No lines contain “${esc(q)}”.</p>`;
+  } else {
+    body.innerHTML = paragraphs(r.segments).map(p => `<p class="para" dir="auto">${highlight(p, q)}</p>`).join("");
+    const first = body.querySelector("mark");
+    if (first) body.scrollTop = Math.max(0, first.offsetTop - body.clientHeight / 2);
+  }
+}
+function langName(code){
+  if (!code) return "";
+  try { return new Intl.DisplayNames(["en"], {type: "language"}).of(code.split("-")[0]) || code; } catch { return code; }
+}
+function renderDone(r){
+  const el = r.el;
+  el.querySelector("h3").innerHTML = `<a href="${esc(r.url)}">${esc(r.title)}</a>`;
+  const words = r.segments.reduce((n, s) => n + s.text.split(/\s+/).filter(Boolean).length, 0);
+  const method = r.method === "captions" ? (r.kind === "uploaded" ? "Creator captions" : "Auto captions") : `Speech-to-text (${r.model})`;
+  el.querySelector(".r-meta").innerHTML = [r.platform, r.uploader, r.duration ? clock(r.duration) : "", method, langName(r.language), `${words.toLocaleString()} words`]
+    .filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("");
+  const st = el.querySelector(".r-status");
+  st.className = "r-status ok"; st.textContent = `Done in ${clock(r.seconds)}`;
+  el.querySelector(".r-prog").hidden = true;
+  el.querySelector(".r-notes").textContent = (r.notes || []).join(" ");
+
+  const tools = el.querySelector(".r-tools"); tools.hidden = false;
+  tools.innerHTML = `
+    <button type="button" data-a="copy">Copy</button>
+    <button type="button" class="quiet" data-a="share">Share</button>
+    <button type="button" class="quiet" data-a="txt">Save .txt</button>
+    <button type="button" class="quiet" data-a="srt">Save .srt</button>
+    <label class="check"><input type="checkbox" data-a="ts" ${r.showTs ? "checked" : ""}> Timestamps</label>
+    <input type="search" placeholder="Find in transcript" aria-label="Find in transcript">
+    <span class="count" aria-live="polite"></span>`;
+  tools.addEventListener("click", e => {
+    const a = e.target.dataset.a;
+    if (a === "copy") A.copy(asText(r, r.showTs));
+    if (a === "share") A.share(r.title, header(r) + asText(r, r.showTs));
+    if (a === "txt") A.save(safeName(r.title) + ".txt", header(r) + asText(r, r.showTs), "text/plain");
+    if (a === "srt") A.save(safeName(r.title) + ".srt", asSrt(r), "application/x-subrip");
+  });
+  tools.querySelector('[data-a="ts"]').addEventListener("change", e => { r.showTs = e.target.checked; store.set("ts", r.showTs ? "1" : "0"); renderBody(r); });
+  tools.querySelector('input[type=search]').addEventListener("input", e => { r.query = e.target.value; renderBody(r); });
+  el.querySelector(".r-body").hidden = false;
+  renderBody(r);
+}
+function newCard(url){
+  const el = document.createElement("article");
+  el.className = "result";
+  el.innerHTML = `
+    <header class="r-head"><h3>${esc(url)}</h3><p class="r-meta"></p></header>
+    <p class="r-status">Waiting</p>
+    <div class="r-prog" hidden><i></i></div>
+    <p class="r-notes"></p>
+    <div class="r-tools" hidden></div>
+    <div class="r-body" hidden></div>`;
+  $("#results").prepend(el);
+  $("#bar").hidden = false;
+  return el;
+}
+
+/* ---------- jobs ---------- */
+function paint(j){
+  const st = j.card.querySelector(".r-status");
+  st.textContent = `${j.text}… ${clock((Date.now() - j.t0) / 1000)}`;
+  const bar = j.card.querySelector(".r-prog");
+  if (j.pct >= 0){ bar.hidden = false; bar.firstElementChild.style.width = Math.min(100, j.pct) + "%"; }
+}
+function runOne(item){
+  return new Promise(done => {
+    const id = "j" + Date.now() + Math.random().toString(36).slice(2, 6);
+    const j = jobs[id] = {card: item.card, t0: Date.now(), text: "Working", pct: -1};
+    const finish = () => { clearInterval(j.timer); delete jobs[id]; done(); };
+    j.timer = setInterval(() => paint(j), 1000);
+    j.resolve = result => {
+      const r = {...result, el: item.card, showTs: store.get("ts") !== "0", query: ""};
+      results.push(r); renderDone(r); finish();
+    };
+    j.reject = msg => {
+      const st = item.card.querySelector(".r-status");
+      st.className = "r-status err"; st.textContent = msg;
+      item.card.querySelector(".r-prog").hidden = true;
+      finish();
+    };
+    paint(j);
+    A.start(id, item.url, JSON.stringify(item.opts));
+  });
+}
+async function processQueue(){
+  running = true; stopRequested = false;
+  $("#stop").hidden = false; A.keepAwake(true);
+  while (queue.length){
+    const item = queue.shift();
+    if (stopRequested){ item.card.querySelector(".r-status").textContent = "Skipped"; continue; }
+    await runOne(item);
+  }
+  running = false; $("#stop").hidden = true; A.keepAwake(false);
+  loadModels();
+}
+function currentOpts(){
+  return {mode: $("#mode").value, lang: $("#lang").value, model: $("#model").value, translate: $("#translate").checked};
+}
+function addLinks(links){
+  if (!links.length) return;
+  const opts = currentOpts();
+  for (const url of links) queue.push({url, opts, card: newCard(url)});
+  window.scrollTo({top: $("#bar").offsetTop - 10, behavior: "smooth"});
+  if (!running) processQueue();
+}
+
+/* ---------- messages from the app ---------- */
+window.onNative = ev => {
+  const j = ev.job ? jobs[ev.job] : null;
+  switch (ev.type){
+    case "status": if (j){ j.text = ev.text; j.pct = ev.pct; paint(j); } break;
+    case "done":   if (j) j.resolve(ev.result); break;
+    case "error":  if (j) j.reject(ev.text); break;
+    case "shared": addLinks([ev.url]); break;
+    case "ready":  $("#health").textContent = "Ready."; showInfo(); break;
+    case "update": $("#health").textContent = ev.text; showInfo(); break;
+    case "fatal":  $("#fatal").hidden = false; $("#fatal").textContent = ev.text; $("#health").textContent = "Not ready"; $("#health").classList.add("bad"); break;
+  }
+};
+
+/* ---------- app section ---------- */
+function showInfo(){
+  try {
+    const i = JSON.parse(A.info());
+    $("#ver").textContent = `App ${i.app}. Downloader ${i.version}. Phone: ${i.abi}, ${i.cores} cores.`;
+  } catch {}
+}
+function loadModels(){
+  let list = [];
+  try { list = JSON.parse(A.models()); } catch {}
+  const sel = $("#model"), keep = sel.value || store.get("model") || "base";
+  sel.innerHTML = list.map(m => `<option value="${m.id}">${esc(m.label)}${m.ready ? "" : " (downloads once)"}</option>`).join("");
+  if ([...sel.options].some(o => o.value === keep)) sel.value = keep;
+  $("#models").innerHTML = list.map(m => `
+    <li><span>${esc(m.label)}<small>${m.ready ? `Downloaded, ${m.mb} MB` : "Not downloaded"}</small></span>
+    ${m.ready ? `<button type="button" class="danger" data-del="${m.id}">Delete</button>` : ""}</li>`).join("");
+}
+$("#models").addEventListener("click", e => {
+  const id = e.target.dataset.del;
+  if (!id || running) return;
+  A.deleteModel(id); loadModels();
+});
+$("#upd").addEventListener("click", () => {
+  if (running){ $("#health").textContent = "Update after the current transcript finishes."; return; }
+  $("#health").textContent = "Updating downloader…"; A.updateDownloader();
+});
+
+/* ---------- form ---------- */
+$("#form").addEventListener("submit", e => {
+  e.preventDefault();
+  const links = parseLinks($("#links").value);
+  if (!links.length){ $("#linkcount").textContent = "Paste at least one link that starts with http:// or https://"; return; }
+  ["mode","lang","model"].forEach(k => store.set(k, $("#" + k).value));
+  $("#links").value = ""; $("#linkcount").textContent = "";
+  addLinks(links);
+});
+$("#stop").addEventListener("click", () => { stopRequested = true; queue.length && queue.forEach(q => q.card.querySelector(".r-status").textContent = "Skipped"); queue.length = 0; A.cancel(); });
+$("#links").addEventListener("input", () => {
+  const n = parseLinks($("#links").value).length;
+  $("#linkcount").textContent = n ? (n === 1 ? "1 link" : `${n} links`) : "";
+});
+$("#all").addEventListener("click", () => {
+  if (!results.length) return;
+  A.save(`transcripts-${new Date().toISOString().slice(0,10)}.txt`, results.map(r => header(r) + asText(r, r.showTs)).join("\n\n\n"), "text/plain");
+});
+
+/* ---------- start ---------- */
+if (!A){
+  $("#fatal").hidden = false; $("#fatal").textContent = "Open this page inside the Transcripts app.";
+} else {
+  ["mode","lang"].forEach(k => { const v = store.get(k); if (v !== null && [...$("#" + k).options].some(o => o.value === v)) $("#" + k).value = v; });
+  loadModels(); showInfo();
+  const shared = A.takeShared();
+  if (shared) addLinks([shared]);
+}
+</script>
+</body>
+</html>
